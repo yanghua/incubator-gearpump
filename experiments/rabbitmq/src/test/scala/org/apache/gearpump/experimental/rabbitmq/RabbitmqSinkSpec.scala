@@ -42,12 +42,12 @@ class RabbitmqSinkSpec extends PropSpec with PropertyChecks with Matchers with M
 
     assert(RMQSink.getQueueName(userConfig).get == "test")
 
-    rmqSink.open(taskContext)
+//    rmqSink.open(taskContext)
 
-    var msg: String = "{ 'hello' : 'world' }"
-    // rmqSink.publish(msg)
+//    var msg: String = "{ 'hello' : 'world' }"
+//      rmqSink.publish(msg)
 
-    rmqSink.close()
+//    rmqSink.close()
   }
 
 }
