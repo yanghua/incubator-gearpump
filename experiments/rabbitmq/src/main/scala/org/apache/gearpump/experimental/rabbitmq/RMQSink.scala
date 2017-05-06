@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.gearpump.external.rabbitmq
+package org.apache.gearpump.experimental.rabbitmq
 
 import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
@@ -25,15 +25,20 @@ import org.apache.gearpump.streaming.task.TaskContext
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.{Connection, ConnectionFactory}
 
-class RMQSink(userConfig: UserConfig) extends DataSink{
+class RMQSink(userConfig: UserConfig,
+    val connFactory: (UserConfig) => ConnectionFactory) extends DataSink{
 
+  var connectionFactory: ConnectionFactory = connFactory(userConfig)
   var connection: Connection = null
   var channel: Channel = null
   var queueName: String = null
 
+  def this(userConfig: UserConfig) = {
+    this(userConfig, RMQSink.getConnectionFactory)
+  }
+
   override def open(context: TaskContext): Unit = {
-    val factory : ConnectionFactory = RMQSink.getConnectionFactory(userConfig)
-    connection = factory.newConnection
+    connection = connectionFactory.newConnection
     channel = connection.createChannel
     if (channel == null) {
       throw new RuntimeException("None of RabbitMQ channels are available.")
@@ -52,7 +57,7 @@ class RMQSink(userConfig: UserConfig) extends DataSink{
 
   protected def setupQueue(): Unit = {
     val queue = RMQSink.getQueueName(userConfig)
-    if (!queue.nonEmpty) {
+    if (queue.isEmpty) {
       throw new RuntimeException("can not get a RabbitMQ queue name")
     }
 
@@ -67,7 +72,7 @@ class RMQSink(userConfig: UserConfig) extends DataSink{
       case str: String => {
         channel.basicPublish("", queueName, null, msg.asInstanceOf[String].getBytes)
       }
-      case byteArray: Array[Byte@unchecked] => {
+      case byteArray: Array[Byte] => {
         channel.basicPublish("", queueName, null, byteArray)
       }
       case _ => {
@@ -97,11 +102,11 @@ object RMQSink {
   val REQUESTED_FRAME_MAX = "rabbitmq.frame.max"
 
   def getConnectionFactory(userConfig : UserConfig): ConnectionFactory = {
-    val factory : ConnectionFactory = new ConnectionFactory;
+    val factory : ConnectionFactory = new ConnectionFactory
 
     val uri : Option[String] = userConfig.getString(CONNECTION_URI)
     if (uri.nonEmpty) {
-      factory.setUri(uri.get);
+      factory.setUri(uri.get)
     } else {
       val serverHost : Option[String] = userConfig.getString(SERVER_HOST)
       val serverPort : Option[Int] = userConfig.getInt(SERVER_PORT)
@@ -113,7 +118,7 @@ object RMQSink {
         throw new RuntimeException("missed config key : " + SERVER_PORT)
       }
 
-      factory.setHost(serverHost.get);
+      factory.setHost(serverHost.get)
       factory.setPort(serverPort.get)
     }
 

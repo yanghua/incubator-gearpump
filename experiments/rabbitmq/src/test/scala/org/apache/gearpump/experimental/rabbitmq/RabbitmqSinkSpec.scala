@@ -15,8 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.gearpump.external.rabbitmq
+package org.apache.gearpump.experimental.rabbitmq
 
+import com.rabbitmq.client.AMQP.Connection
+import com.rabbitmq.client.ConnectionFactory
 import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.TaskContext
@@ -27,7 +29,7 @@ import org.scalatest.{Matchers, PropSpec}
 
 class RabbitmqSinkSpec extends PropSpec with PropertyChecks with Matchers with MockitoSugar {
 
-  property("HBaseSink should insert a row successfully") {
+  property("RMQSink should insert a row successfully") {
 
     val taskContext = mock[TaskContext]
 
@@ -43,7 +45,7 @@ class RabbitmqSinkSpec extends PropSpec with PropertyChecks with Matchers with M
     rmqSink.open(taskContext)
 
     var msg: String = "{ 'hello' : 'world' }"
-    rmqSink.publish(msg)
+    // rmqSink.publish(msg)
 
     rmqSink.close()
   }
