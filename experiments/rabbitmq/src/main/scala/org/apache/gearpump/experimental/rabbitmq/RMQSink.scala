@@ -24,10 +24,12 @@ import org.apache.gearpump.streaming.sink.DataSink
 import org.apache.gearpump.streaming.task.TaskContext
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.{Connection, ConnectionFactory}
+import org.apache.gearpump.util.LogUtil
 
 class RMQSink(userConfig: UserConfig,
     val connFactory: (UserConfig) => ConnectionFactory) extends DataSink{
 
+  private val LOG = LogUtil.getLogger(getClass)
   var connectionFactory: ConnectionFactory = connFactory(userConfig)
   var connection: Connection = null
   var channel: Channel = null
@@ -76,7 +78,7 @@ class RMQSink(userConfig: UserConfig,
         channel.basicPublish("", queueName, null, byteArray)
       }
       case _ => {
-
+        LOG.warn("matched unsupported message!")
       }
     }
   }

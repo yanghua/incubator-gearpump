@@ -17,12 +17,8 @@
  */
 package org.apache.gearpump.experimental.rabbitmq
 
-import com.rabbitmq.client.AMQP.Connection
-import com.rabbitmq.client.ConnectionFactory
-import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.task.TaskContext
-import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{Matchers, PropSpec}
@@ -45,7 +41,7 @@ class RabbitmqSinkSpec extends PropSpec with PropertyChecks with Matchers with M
 //    rmqSink.open(taskContext)
 
 //    var msg: String = "{ 'hello' : 'world' }"
-//      rmqSink.publish(msg)
+//    rmqSink.publish(msg)
 
 //    rmqSink.close()
   }
