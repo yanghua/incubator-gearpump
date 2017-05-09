@@ -71,6 +71,12 @@ object BuildExamples extends sbt.Build {
     settings = exampleSettings("org.apache.gearpump.streaming.examples.wordcount.WordCount")
   ).dependsOn(core % "provided", streaming % "test->test; provided")
 
+  lazy val window = Project(
+    id = "gearpump-examples-window",
+    base = file("examples/streaming/window"),
+    settings = exampleSettings("org.apache.gearpump.streaming.examples.window.Window")
+  ).dependsOn(core % "provided", streaming % "test->test; provided")
+
   lazy val sol = Project(
     id = "gearpump-examples-sol",
     base = file("examples/streaming/sol"),
