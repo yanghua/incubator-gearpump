@@ -20,4 +20,6 @@ package org.apache.gearpump.streaming.examples.window
 
 object Window {
 
+
+
 }

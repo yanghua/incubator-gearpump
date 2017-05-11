@@ -34,6 +34,7 @@ object BuildExamples extends sbt.Build {
     fsio,
     pagerank,
     sol,
+    window,
     wordcount,
     wordcountJava,
     example_hbase

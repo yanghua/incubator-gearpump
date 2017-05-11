@@ -29,22 +29,20 @@ import org.apache.gearpump.streaming.source.DataSource
 import org.apache.gearpump.streaming.task.TaskContext
 import org.apache.gearpump.util.AkkaApp
 
-object WindowedWordCount extends AkkaApp with ArgumentsParser {
+object FixedWindow extends AkkaApp with ArgumentsParser {
 
   override val options: Array[(String, CLIOption[Any])] = Array.empty
 
   override def main(akkaConf: Config, args: Array[String]): Unit = {
     val context = ClientContext(akkaConf)
-    val app = StreamApp("dsl", context)
-    app.source[String](new TimedDataSource).
-      // word => (word, count)
-      flatMap(line => line.split("[\\s]+")).map((_, 1)).
-      // fix window
-      window(FixedWindows.apply(Duration.ofMillis(5L))
-      .triggering(EventTimeTrigger)).
-      // (word, count1), (word, count2) => (word, count1 + count2)
-      groupBy(_._1).
-      sum.sink(new LoggerSink)
+    val app = StreamApp("fixedWindowDsl", context)
+    app.source[String](new TimedDataSource)
+      .flatMap(line => line.split("[\\s]+")).map((_, 1))
+      .window(FixedWindows.apply(Duration.ofMillis(5L))
+      .triggering(EventTimeTrigger))
+      .groupBy(_._1)
+      .sum
+      .sink(new LoggerSink)
 
     context.submit(app)
     context.close()
