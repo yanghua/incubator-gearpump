@@ -263,10 +263,10 @@ public abstract class Coder<T> implements Serializable {
      * coder.
      */
     private class IteratorObserver implements Observer {
-        private final IterableLikeCoder.ElementByteSizeObserver outerObserver;
+        private final ElementByteSizeObserver outerObserver;
         private final boolean countable;
 
-        public IteratorObserver(IterableLikeCoder.ElementByteSizeObserver outerObserver,
+        public IteratorObserver(ElementByteSizeObserver outerObserver,
                                 boolean countable) {
             this.outerObserver = outerObserver;
             this.countable = countable;

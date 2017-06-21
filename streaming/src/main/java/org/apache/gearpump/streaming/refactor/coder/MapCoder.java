@@ -137,7 +137,7 @@ public class MapCoder<K, V> extends StructuredCoder<Map<K, V>> {
 
     @Override
     public void registerByteSizeObserver(
-            Map<K, V> map, IterableLikeCoder.ElementByteSizeObserver observer) {
+            Map<K, V> map, ElementByteSizeObserver observer) {
         observer.update(4L);
         if (map.isEmpty()) {
             return;
