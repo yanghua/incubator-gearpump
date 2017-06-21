@@ -68,7 +68,7 @@ class SumProcessor(taskContext: TaskContext, conf: UserConfig)
   }
 
   override def invoke(message: Message): Unit = {
-    message.msg match {
+    message.value match {
       case numberByte: Array[Byte] => {
         val number = new String(numberByte)
         val oldVal = valueState.get.read

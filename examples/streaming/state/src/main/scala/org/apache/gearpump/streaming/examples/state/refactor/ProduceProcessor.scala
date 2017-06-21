@@ -32,7 +32,7 @@ class ProduceProcessor(taskContext: TaskContext, conf: UserConfig)
   override def open: Unit = {}
 
   override def invoke(message: Message): Unit = {
-    message.msg match {
+    message.value match {
       case msgBytes: Array[Byte] => {
         val msgStr = new String(msgBytes)
         LOG.info("got total sequence num : {}", msgStr)

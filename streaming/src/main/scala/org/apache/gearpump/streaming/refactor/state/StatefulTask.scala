@@ -98,7 +98,7 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
   }
 
   final override def onNext(message: Message): Unit = {
-    checkpointManager.update(message.timeInMillis)
+    checkpointManager.update(message.timestamp.toEpochMilli)
     invoke(message)
   }
 
