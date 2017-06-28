@@ -31,21 +31,10 @@ import org.apache.gearpump.streaming.refactor.state.{StateBinder, StateNamespace
 import org.apache.gearpump.streaming.refactor.state.api._
 import org.apache.gearpump.util.LogUtil
 
-/**
- *  a heap memory backend StateInternals implementation
- *  it will cache state in heap memory with a Guava's Table structure
- *  there are three concept :
- *  (1) namespace mapping table's row id
- *  (2) tag mapping table's field
- *  (3) state mapping table's cell value
- */
 class HeapStateInternals[K](key: K, stateTable: Table[String, String, Array[Byte]])
   extends StateInternals {
 
   val LOG = LogUtil.getLogger(getClass)
-
-  private val k: K = key
-  private val st: Table[String, String, Array[Byte]] = stateTable
 
   private class HeapStateBinder(namespace: StateNamespace, address: StateTag[_])
     extends StateBinder {
@@ -72,7 +61,7 @@ class HeapStateInternals[K](key: K, stateTable: Table[String, String, Array[Byte
 
   }
 
-  override def getKey: Any = k
+  override def getKey: Any = key
 
   override def state[T <: State](namespace: StateNamespace, address: StateTag[T]): T =
     address.bind(new HeapStateBinder(namespace, address))
@@ -86,13 +75,13 @@ class HeapStateInternals[K](key: K, stateTable: Table[String, String, Array[Byte
 
     protected def readValue: T = {
       var value: T = null.asInstanceOf[T]
-      val buf: Array[Byte] = st.get(ns.stringKey, addr.getId)
+      val buf: Array[Byte] = stateTable.get(ns.stringKey, addr.getId)
       if (buf != null) {
         val is: InputStream = new ByteArrayInputStream(buf)
         try {
           value = c.decode(is)
         } catch {
-          case ex: unchecked => throw new RuntimeException(ex)
+          case ex: Exception => throw new RuntimeException(ex)
         }
       }
 
@@ -103,13 +92,13 @@ class HeapStateInternals[K](key: K, stateTable: Table[String, String, Array[Byte
       val output: ByteArrayOutputStream = new ByteArrayOutputStream();
       try {
         c.encode(input, output)
-        st.put(ns.stringKey, addr.getId, output.toByteArray)
+        stateTable.put(ns.stringKey, addr.getId, output.toByteArray)
       } catch {
-        case ex: unchecked => throw new RuntimeException(ex)
+        case ex: Exception => throw new RuntimeException(ex)
       }
     }
 
-    def clear: Unit = st.remove(ns.stringKey, addr.getId)
+    def clear: Unit = stateTable.remove(ns.stringKey, addr.getId)
 
     override def hashCode(): Int = Objects.hash(ns, addr)
 

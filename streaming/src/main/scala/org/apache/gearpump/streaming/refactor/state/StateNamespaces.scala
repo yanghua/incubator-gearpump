@@ -20,9 +20,6 @@ package org.apache.gearpump.streaming.refactor.state
 
 import java.util.Objects
 
-/**
- *  a utility for state namespace
- */
 object StateNamespaces {
 
   def global: StateNamespace = {

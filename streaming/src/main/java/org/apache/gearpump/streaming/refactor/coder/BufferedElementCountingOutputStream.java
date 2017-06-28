@@ -22,9 +22,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
-/**
- * a buffered output stream's implementation inspired by Apache Beam
- */
 public class BufferedElementCountingOutputStream extends OutputStream {
     public static final int DEFAULT_BUFFER_SIZE = 64 * 1024;
     private final ByteBuffer buffer;
@@ -32,18 +29,10 @@ public class BufferedElementCountingOutputStream extends OutputStream {
     private boolean finished;
     private long count;
 
-    /**
-     * Creates an output stream which encodes the number of elements output to it in a streaming
-     * manner.
-     */
     public BufferedElementCountingOutputStream(OutputStream os) {
         this(os, DEFAULT_BUFFER_SIZE);
     }
 
-    /**
-     * Creates an output stream which encodes the number of elements output to it in a streaming
-     * manner with the given {@code bufferSize}.
-     */
     BufferedElementCountingOutputStream(OutputStream os, int bufferSize) {
         this.buffer = ByteBuffer.allocate(bufferSize);
         this.os = os;
@@ -51,10 +40,6 @@ public class BufferedElementCountingOutputStream extends OutputStream {
         this.count = 0;
     }
 
-    /**
-     * Finishes the encoding by flushing any buffered data,
-     * and outputting a final count of 0.
-     */
     public void finish() throws IOException {
         if (finished) {
             return;
@@ -65,11 +50,6 @@ public class BufferedElementCountingOutputStream extends OutputStream {
         finished = true;
     }
 
-    /**
-     * Marks that a new element is being output. This allows this output stream
-     * to use the buffer if it had previously overflowed marking the start of a new
-     * block of elements.
-     */
     public void markElementStart() throws IOException {
         if (finished) {
             throw new IOException("Stream has been finished. Can not add any more elements.");

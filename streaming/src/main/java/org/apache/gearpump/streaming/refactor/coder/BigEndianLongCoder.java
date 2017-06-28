@@ -20,10 +20,6 @@ package org.apache.gearpump.streaming.refactor.coder;
 
 import java.io.*;
 
-/**
- * A {@link BigEndianLongCoder} encodes {@link Long}s in 8 bytes, big-endian.
- * inspired by Apache Beam
- */
 public class BigEndianLongCoder extends AtomicCoder<Long> {
 
     public static BigEndianLongCoder of() {
@@ -67,31 +63,16 @@ public class BigEndianLongCoder extends AtomicCoder<Long> {
     public void verifyDeterministic() {
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. This coder is injective.
-     */
     @Override
     public boolean consistentWithEquals() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}, since {@link #getEncodedElementByteSize} returns a constant.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(Long value) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code 8}, the byte size of a big-endian encoded {@code Long}.
-     */
     @Override
     protected long getEncodedElementByteSize(Long value) {
         if (value == null) {

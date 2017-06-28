@@ -23,21 +23,12 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-/**
- * a iterable like coder inspired by Apache Beam
- * @param <T> the coder type
- * @param <IterableT> the iterable type
- */
 public abstract class IterableLikeCoder<T, IterableT extends Iterable<T>>
         extends StructuredCoder<IterableT> {
     public Coder<T> getElemCoder() {
         return elementCoder;
     }
 
-    /**
-     * Builds an instance of {@code IterableT}, this coder's associated {@link Iterable}-like
-     * subtype, from a list of decoded elements.
-     */
     protected abstract IterableT decodeToIterable(List<T> decodedElements);
 
     /////////////////////////////////////////////////////////////////////////////
@@ -122,26 +113,12 @@ public abstract class IterableLikeCoder<T, IterableT extends Iterable<T>>
         return Arrays.asList(elementCoder);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws NonDeterministicException always.
-     * Encoding is not deterministic for the general {@link Iterable} case, as it depends
-     * upon the type of iterable. This may allow two objects to compare as equal
-     * while the encoding differs.
-     */
     @Override
     public void verifyDeterministic() throws Coder.NonDeterministicException {
         throw new NonDeterministicException(this,
                 "IterableLikeCoder can not guarantee deterministic ordering.");
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true} if the iterable is of a known class that supports lazy counting
-     * of byte size, since that requires minimal extra computation.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(
             IterableT iterable) {
@@ -194,13 +171,6 @@ public abstract class IterableLikeCoder<T, IterableT extends Iterable<T>>
         }
     }
 
-    /**
-     * An observer that gets notified when an observable iterator
-     * returns a new value. This observer just notifies an outerObserver
-     * about this event. Additionally, the outerObserver is notified
-     * about additional separators that are transparently added by this
-     * coder.
-     */
     private class IteratorObserver implements Observer {
         private final ElementByteSizeObserver outerObserver;
         private final boolean countable;
@@ -235,37 +205,17 @@ public abstract class IterableLikeCoder<T, IterableT extends Iterable<T>>
         }
     }
 
-    /**
-     * An abstract class used for iterables that notify observers about size in
-     * bytes of their elements, as they are being iterated over.
-     *
-     * @param <V> the type of elements returned by this iterable
-     * @param <InputT> type type of iterator returned by this iterable
-     */
     public static abstract class ElementByteSizeObservableIterable<
             V, InputT extends ElementByteSizeObservableIterator<V>>
             implements Iterable<V> {
         private List<Observer> observers = new ArrayList<>();
 
-        /**
-         * Derived classes override this method to return an iterator for this
-         * iterable.
-         */
         protected abstract InputT createIterator();
 
-        /**
-         * Sets the observer, which will observe the iterator returned in
-         * the next call to iterator() method. Future calls to iterator()
-         * won't be observed, unless an observer is set again.
-         */
         public void addObserver(Observer observer) {
             observers.add(observer);
         }
 
-        /**
-         * Returns a new iterator for this iterable. If an observer was set in
-         * a previous call to setObserver(), it will observe the iterator returned.
-         */
         @Override
         public InputT iterator() {
             InputT iterator = createIterator();
@@ -277,14 +227,6 @@ public abstract class IterableLikeCoder<T, IterableT extends Iterable<T>>
         }
     }
 
-    /**
-     * An abstract class used for iterators that notify observers about size in
-     * bytes of their elements, as they are being iterated over. The subclasses
-     * need to implement the standard Iterator interface and call method
-     * notifyValueReturned() for each element read and/or iterated over.
-     *
-     * @param <V> value type
-     */
     public static abstract class ElementByteSizeObservableIterator<V>
             extends Observable implements Iterator<V> {
         protected final void notifyValueReturned(long byteSize) {

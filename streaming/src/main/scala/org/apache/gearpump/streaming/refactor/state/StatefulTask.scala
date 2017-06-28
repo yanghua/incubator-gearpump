@@ -38,12 +38,6 @@ object StatefulTask {
   val LOG = LogUtil.getLogger(getClass)
 }
 
-/**
- * stateful task that support state access and all state will be backed in memory
- * after checkpoint state will persist into storage layer and it will guarantee
- * 'exactly-once' process semantic
- *
- */
 abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
   extends Task(taskContext, conf) {
 
@@ -61,14 +55,8 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
   // core state data
   var encodedKeyStateMap: Map[String, Table[String, String, Array[Byte]]] = null
 
-  /**
-   * subclass should override this method if they want to init state api
-   */
   def open: Unit = {}
 
-  /**
-   * Subclass should override this method to specify how a new message should update state
-   */
   def invoke(message: Message): Unit
 
   def close: Unit = {}
@@ -137,14 +125,15 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
       case e: Exception => throw new RuntimeException(e)
     } finally {
       try {
-        if (oin.nonEmpty) oin.get.close()
+        if (oin.nonEmpty) oin.foreach(_.close())
       } catch {
-        case _ =>
+        case ex: Exception => LOG.error("occurs exception when closing ObjectInputStream : {}", ex)
       }
       try {
-        if (bis.nonEmpty) bis.get.close()
+        if (bis.nonEmpty) bis.foreach(_.close())
       } catch {
-        case _ =>
+        case ex: Exception =>
+          LOG.error("occurs exception when closing ByteArrayInputStream : {}", ex)
       }
     }
   }
@@ -164,14 +153,15 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
       case e: Exception => throw new RuntimeException(e)
     } finally {
       try {
-        if (oout.nonEmpty) oout.get.close()
+        if (oout.nonEmpty) oout.foreach(_.close())
       } catch {
-        case _ =>
+        case ex: Exception => LOG.error("occurs exception when closing ObjectOutputStream : {}", ex)
       }
       try {
-        if (buffer.nonEmpty) buffer.get.close()
+        if (buffer.nonEmpty) buffer.foreach(_.close())
       } catch {
-        case _ =>
+        case ex: Exception =>
+          LOG.error("occurs exception when closing ByteArrayOutputStream : {}", ex)
       }
     }
   }

@@ -20,27 +20,12 @@ package org.apache.gearpump.streaming.refactor.state.api
 
 import java.lang.Iterable
 
-/**
- * A {@link ReadableState} cell containing a set of elements.
- *
- * <p>Implementations of this form of state are expected to implement set operations such as {@link
- * #contains(Object)} efficiently, reading as little of the overall set as possible.
- *
- * @tparam T The type of elements in the set.
- */
 trait SetState[T] extends GroupingState[T, Iterable[T]]{
 
-  /**
-   * Returns true if this set contains the specified element.
-   * @param t
-   * @return
-   */
   def contains(t: T): ReadableState[Boolean]
 
-  /** Removes the specified element from this set if it is present. */
   def addIfAbsent(t: T): ReadableState[Boolean]
 
-  /** Removes the specified element from this set if it is present. */
   def remove(t: T): Unit
 
   def readLater: SetState[T]

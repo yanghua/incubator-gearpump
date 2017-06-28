@@ -20,15 +20,6 @@ package org.apache.gearpump.streaming.refactor.state.api
 
 import java.lang.Iterable
 
-/**
- * A {@link ReadableState} cell containing a bag of values. Items can be added to the bag and the
- * contents read out.
- *
- * <p>Implementations of this form of state are expected to implement {@link #add} efficiently, not
- * via a sequence of read-modify-write.
- *
- * @tparam T The type of elements in the bag.
- */
 trait BagState[T] extends GroupingState[T, Iterable[T]] {
 
   def readLater: BagState[T]

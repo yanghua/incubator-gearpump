@@ -16,10 +16,30 @@
  * limitations under the License.
  */
 
-package org.apache.gearpump.streaming.refactor.state.api
+package org.apache.gearpump.streaming.refactor.coder;
 
-trait StateInternalsFactory[K] extends Serializable {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observer;
 
-  def stateInternalsForKey(key: K): StateInternals
+public abstract class ElementByteSizeObservableIterable<
+        V, InputT extends ElementByteSizeObservableIterator<V>>
+        implements Iterable<V> {
+    private List<Observer> observers = new ArrayList<>();
 
+    protected abstract InputT createIterator();
+
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public InputT iterator() {
+        InputT iterator = createIterator();
+        for (Observer observer : observers) {
+            iterator.addObserver(observer);
+        }
+        observers.clear();
+        return iterator;
+    }
 }

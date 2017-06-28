@@ -18,9 +18,6 @@
 
 package org.apache.gearpump.streaming.refactor.state
 
-/**
- * the state namespace used for fetching a state in a table data structure <ns, tag, cell>
- */
 trait StateNamespace {
 
   def stringKey: String

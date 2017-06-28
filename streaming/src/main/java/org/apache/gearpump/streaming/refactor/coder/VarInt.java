@@ -23,25 +23,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * a int coder inspired by Apache Beam
- */
 public class VarInt {
 
     private static long convertIntToLongNoSignExtend(int v) {
         return v & 0xFFFFFFFFL;
     }
 
-    /**
-     * Encodes the given value onto the stream.
-     */
     public static void encode(int v, OutputStream stream) throws IOException {
         encode(convertIntToLongNoSignExtend(v), stream);
     }
 
-    /**
-     * Encodes the given value onto the stream.
-     */
     public static void encode(long v, OutputStream stream) throws IOException {
         do {
             // Encode next 7 bits + terminator bit
@@ -52,9 +43,6 @@ public class VarInt {
         } while (v != 0);
     }
 
-    /**
-     * Decodes an integer value from the given stream.
-     */
     public static int decodeInt(InputStream stream) throws IOException {
         long r = decodeLong(stream);
         if (r < 0 || r >= 1L << 32) {
@@ -63,9 +51,6 @@ public class VarInt {
         return (int) r;
     }
 
-    /**
-     * Decodes a long value from the given stream.
-     */
     public static long decodeLong(InputStream stream) throws IOException {
         long result = 0;
         int shift = 0;
@@ -91,16 +76,10 @@ public class VarInt {
         return result;
     }
 
-    /**
-     * Returns the length of the encoding of the given value (in bytes).
-     */
     public static int getLength(int v) {
         return getLength(convertIntToLongNoSignExtend(v));
     }
 
-    /**
-     * Returns the length of the encoding of the given value (in bytes).
-     */
     public static int getLength(long v) {
         int result = 0;
         do {

@@ -17,9 +17,6 @@
  */
 package org.apache.gearpump.streaming.refactor.coder;
 
-/**
- * An {@link Exception} thrown if there is a problem encoding or decoding a value.
- */
 public class CoderException extends RuntimeException {
     public CoderException(String message) {
         super(message);

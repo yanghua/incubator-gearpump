@@ -20,10 +20,6 @@ package org.apache.gearpump.streaming.refactor.coder;
 
 import java.io.*;
 
-/**
- * A {@link BigEndianIntegerCoder} encodes {@link Integer Integers} in 4 bytes, big-endian.
- * inspired by Apache Beam
- */
 public class BigEndianIntegerCoder extends AtomicCoder<Integer> {
 
     public static BigEndianIntegerCoder of() {
@@ -67,31 +63,16 @@ public class BigEndianIntegerCoder extends AtomicCoder<Integer> {
     @Override
     public void verifyDeterministic() {}
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. This coder is injective.
-     */
     @Override
     public boolean consistentWithEquals() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}, because {@link #getEncodedElementByteSize} runs in constant time.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(Integer value) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code 4}, the size in bytes of an integer's big endian encoding.
-     */
     @Override
     protected long getEncodedElementByteSize(Integer value) {
         if (value == null) {

@@ -20,11 +20,6 @@ package org.apache.gearpump.streaming.refactor.coder;
 
 import java.io.*;
 
-/**
- * A {@link Coder} that encodes {@link Integer Integers} using between 1 and 5 bytes. Negative
- * numbers always take 5 bytes, so {@link BigEndianIntegerCoder} may be preferable for
- * integers that are known to often be large or negative.
- */
 public class VarIntCoder extends AtomicCoder<Integer> {
 
     public static VarIntCoder of() {
@@ -67,21 +62,11 @@ public class VarIntCoder extends AtomicCoder<Integer> {
     @Override
     public void verifyDeterministic() {}
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. {@link VarIntCoder} is injective.
-     */
     @Override
     public boolean consistentWithEquals() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. {@link #getEncodedElementByteSize} is cheap.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(Integer value) {
         return true;

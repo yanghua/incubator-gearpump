@@ -18,31 +18,10 @@
 
 package org.apache.gearpump.streaming.refactor.state.api
 
-/**
- * A {@link State} that can be read via {@link #read()} inspired by Apache Beam.
- *
- * <p>Use {@link #readLater()} for marking several states for prefetching. Runners can potentially
- * batch these into one read.
- *
- */
 trait ReadableState[T] {
-  /**
-   * Read the current value, blocking until it is available.
-   *
-   * <p>If there will be many calls to {@link #read} for different state in short succession, you
-   * should first call {@link #readLater} for all of them so the reads can potentially be batched
-   * (depending on the underlying implementation}.
-   */
+
   def read: T
 
-  /**
-   * Indicate that the value will be read later.
-   *
-   * <p>This allows an implementation to start an asynchronous prefetch or to include this state in
-   * the next batch of reads.
-   *
-   * @return this for convenient chaining
-   */
   def readLater: ReadableState[T]
 
 }

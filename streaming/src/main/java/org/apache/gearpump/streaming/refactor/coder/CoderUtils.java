@@ -23,9 +23,6 @@ import com.google.common.io.BaseEncoding;
 import java.io.*;
 import java.lang.ref.SoftReference;
 
-/**
- * Utilities for working with Coders.
- */
 public final class CoderUtils {
     private CoderUtils() {
     }  // Non-instantiable
@@ -33,9 +30,6 @@ public final class CoderUtils {
     private static ThreadLocal<SoftReference<ExposedByteArrayOutputStream>>
             threadLocalOutputStream = new ThreadLocal<>();
 
-    /**
-     * If true, a call to {@code encodeToByteArray} is already on the call stack.
-     */
     private static ThreadLocal<Boolean> threadLocalOutputStreamInUse = new ThreadLocal<Boolean>() {
         @Override
         protected Boolean initialValue() {
@@ -43,13 +37,6 @@ public final class CoderUtils {
         }
     };
 
-    /**
-     * Encodes the given value using the specified Coder, and returns
-     * the encoded bytes.
-     * <p>
-     * <p>This function is not reentrant; it should not be called from methods of the provided
-     * {@link Coder}.
-     */
     public static <T> byte[] encodeToByteArray(Coder<T> coder, T value)
             throws CoderException {
         if (threadLocalOutputStreamInUse.get()) {
@@ -70,11 +57,6 @@ public final class CoderUtils {
         }
     }
 
-    /**
-     * Encodes {@code value} to the given {@code stream}, which should be a stream that never throws
-     * {@code IOException}, such as {@code ByteArrayOutputStream} or
-     * {@link ExposedByteArrayOutputStream}.
-     */
     private static <T> void encodeToSafeStream(
             Coder<T> coder, T value, OutputStream stream) throws CoderException {
         try {
@@ -85,10 +67,6 @@ public final class CoderUtils {
         }
     }
 
-    /**
-     * Decodes the given bytes using the specified Coder, and returns
-     * the resulting decoded value.
-     */
     public static <T> T decodeFromByteArray(
             Coder<T> coder, byte[] encodedValue) throws CoderException {
         try (ExposedByteArrayInputStream stream = new ExposedByteArrayInputStream(encodedValue)) {
@@ -101,11 +79,6 @@ public final class CoderUtils {
         }
     }
 
-    /**
-     * Decodes a value from the given {@code stream}, which should be a stream that never throws
-     * {@code IOException}, such as {@code ByteArrayInputStream} or
-     * {@link ExposedByteArrayInputStream}.
-     */
     private static <T> T decodeFromSafeStream(
             Coder<T> coder, InputStream stream) throws CoderException {
         try {
@@ -127,58 +100,28 @@ public final class CoderUtils {
         return stream;
     }
 
-    /**
-     * Clones the given value by encoding and then decoding it with the specified Coder.
-     * <p>
-     * <p>This function is not reentrant; it should not be called from methods of the provided
-     * {@link Coder}.
-     */
     public static <T> T clone(Coder<T> coder, T value) throws CoderException {
         return decodeFromByteArray(coder, encodeToByteArray(coder, value));
     }
 
-    /**
-     * Encodes the given value using the specified Coder, and returns the Base64 encoding of the
-     * encoded bytes.
-     *
-     * @throws CoderException if there are errors during encoding.
-     */
     public static <T> String encodeToBase64(Coder<T> coder, T value)
             throws CoderException {
         byte[] rawValue = encodeToByteArray(coder, value);
         return BaseEncoding.base64Url().omitPadding().encode(rawValue);
     }
 
-    /**
-     * Parses a value from a base64-encoded String using the given coder.
-     */
     public static <T> T decodeFromBase64(Coder<T> coder, String encodedValue) throws CoderException {
         return decodeFromSafeStream(
                 coder,
                 new ByteArrayInputStream(BaseEncoding.base64Url().omitPadding().decode(encodedValue)));
     }
 
-    /**
-     * {@link ByteArrayOutputStream} special cased to treat writes of a single byte-array specially.
-     * When calling {@link #toByteArray()} after writing only one {@code byte[]} using
-     * {@link #writeAndOwn(byte[])}, it will return that array directly.
-     */
     public static class ExposedByteArrayOutputStream extends ByteArrayOutputStream {
 
         private byte[] swappedBuffer;
 
-        /**
-         * If true, this stream doesn't allow direct access to the passed in byte-array. It behaves just
-         * like a normal {@link ByteArrayOutputStream}.
-         * <p>
-         * <p>It is set to true after any write operations other than the first call to
-         * {@link #writeAndOwn(byte[])}.
-         */
         private boolean isFallback = false;
 
-        /**
-         * Fall back to the behavior of a normal {@link ByteArrayOutputStream}.
-         */
         private void fallback() {
             isFallback = true;
             if (swappedBuffer != null) {
@@ -193,13 +136,6 @@ public final class CoderUtils {
             }
         }
 
-        /**
-         * Write {@code b} to the stream and take the ownership of {@code b}.
-         * If the stream is empty, {@code b} itself will be used as the content of the stream and
-         * no content copy will be involved.
-         * <p>
-         * <p><i>Note: After passing any byte array to this method, it must not be modified again.</i>
-         */
         public void writeAndOwn(byte[] b) throws IOException {
             if (b.length == 0) {
                 return;
@@ -254,18 +190,12 @@ public final class CoderUtils {
         }
     }
 
-    /**
-     * {@link ByteArrayInputStream} that allows accessing the entire internal buffer without copying.
-     */
     public static class ExposedByteArrayInputStream extends ByteArrayInputStream {
 
         public ExposedByteArrayInputStream(byte[] buf) {
             super(buf);
         }
 
-        /**
-         * Read all remaining bytes.
-         */
         public byte[] readAll() throws IOException {
             if (pos == 0 && count == buf.length) {
                 pos = count;
@@ -286,10 +216,6 @@ public final class CoderUtils {
         }
     }
 
-    /**
-     * A {@link OutputStream} wrapper which protects against the user attempting to modify
-     * the underlying stream by closing it.
-     */
     public static class UnownedOutputStream extends FilterOutputStream {
         public UnownedOutputStream(OutputStream delegate) {
             super(delegate);
@@ -314,10 +240,6 @@ public final class CoderUtils {
 
     }
 
-    /**
-     * A {@link OutputStream} wrapper which protects against the user attempting to modify
-     * the underlying stream by closing it or using mark.
-     */
     public static class UnownedInputStream extends FilterInputStream {
         public UnownedInputStream(InputStream delegate) {
             super(delegate);
@@ -360,6 +282,5 @@ public final class CoderUtils {
         }
 
     }
-
 
 }

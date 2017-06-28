@@ -21,9 +21,6 @@ package org.apache.gearpump.streaming.refactor.state
 import org.apache.gearpump.streaming.refactor.coder.Coder
 import org.apache.gearpump.streaming.refactor.state.api.{BagState, MapState, SetState, ValueState}
 
-/**
- * {@link StateSpec} and to the associated {@link State} inspired by Apache Beam.
- */
 trait StateBinder {
 
   def bindValue[T](id: String, spec: StateSpec[ValueState[T]], coder: Coder[T]): ValueState[T]

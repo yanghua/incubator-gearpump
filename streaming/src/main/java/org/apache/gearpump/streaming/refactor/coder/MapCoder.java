@@ -23,14 +23,8 @@ import com.google.common.collect.Maps;
 import java.io.*;
 import java.util.*;
 
-/**
- * Created by yanghua on 5/31/17.
- */
 public class MapCoder<K, V> extends StructuredCoder<Map<K, V>> {
 
-    /**
-     * Produces a MapCoder with the given keyCoder and valueCoder.
-     */
     public static <K, V> MapCoder<K, V> of(
             Coder<K> keyCoder,
             Coder<V> valueCoder) {
@@ -112,23 +106,11 @@ public class MapCoder<K, V> extends StructuredCoder<Map<K, V>> {
         return retval;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return a {@link List} containing the key coder at index 0 at the and value coder at index 1.
-     */
     @Override
     public List<? extends Coder<?>> getCoderArguments() {
         return Arrays.asList(keyCoder, valueCoder);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws NonDeterministicException always. Not all maps have a deterministic encoding.
-     * For example, {@code HashMap} comparison does not depend on element order, so
-     * two {@code HashMap} instances may be equal but produce different encodings.
-     */
     @Override
     public void verifyDeterministic() throws NonDeterministicException {
         throw new NonDeterministicException(this,

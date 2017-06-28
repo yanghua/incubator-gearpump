@@ -20,10 +20,6 @@ package org.apache.gearpump.streaming.refactor.coder;
 
 import java.util.List;
 
-/**
- * a list coder inspired by Apache Beam
- * @param <T> the item type in list
- */
 public class ListCoder<T> extends IterableLikeCoder<T, List<T>> {
 
     public static <T> ListCoder<T> of(Coder<T> elemCoder) {
@@ -42,10 +38,6 @@ public class ListCoder<T> extends IterableLikeCoder<T, List<T>> {
         super(elemCoder, "List");
     }
 
-    /**
-     * List sizes are always known, so ListIterable may be deterministic while
-     * the general IterableLikeCoder is not.
-     */
     @Override
     public void verifyDeterministic() throws NonDeterministicException {
         verifyDeterministic(this, "ListCoder.elemCoder must be deterministic",

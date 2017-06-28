@@ -21,57 +21,26 @@ package org.apache.gearpump.streaming.refactor.coder;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * a atomic coder inspired by Apache Beam
- * @param <T> the type for coder
- */
 public abstract class AtomicCoder<T> extends StructuredCoder<T>  {
-    /**
-     * {@inheritDoc}.
-     *
-     * <p>Unless overridden, does not throw. An {@link AtomicCoder} is presumed to be deterministic
-     *
-     * @throws NonDeterministicException if overridden to indicate that this sublcass of
-     *         {@link AtomicCoder} is not deterministic
-     */
+
     @Override
     public void verifyDeterministic() {}
 
-    /**
-     * {@inheritDoc}.
-     *
-     * @return the empty list
-     */
     @Override
     public List<? extends Coder<?>> getCoderArguments() {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}.
-     *
-     * @return the empty {@link List}.
-     */
     @Override
     public final List<? extends Coder<?>> getComponents() {
         return Collections.emptyList();
     }
 
-    /**
-     * {@inheritDoc}.
-     *
-     * @return true if the other object has the same class as this {@link AtomicCoder}.
-     */
     @Override
     public final boolean equals(Object other) {
         return other != null && this.getClass().equals(other.getClass());
     }
 
-    /**
-     * {@inheritDoc}.
-     *
-     * @return the {@link #hashCode()} of the {@link Class} of this {@link AtomicCoder}.
-     */
     @Override
     public final int hashCode() {
         return this.getClass().hashCode();

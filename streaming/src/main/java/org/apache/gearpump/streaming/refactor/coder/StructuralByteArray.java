@@ -22,9 +22,6 @@ import com.google.common.io.BaseEncoding;
 
 import java.util.Arrays;
 
-/**
- * a structural byte array inspired by Apache Beam
- */
 public class StructuralByteArray {
     byte[] value;
 

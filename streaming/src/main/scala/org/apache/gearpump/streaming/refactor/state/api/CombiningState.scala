@@ -18,32 +18,12 @@
 
 package org.apache.gearpump.streaming.refactor.state.api
 
-/**
- * A {@link ReadableState} cell defined by a {@link CombineFn}, accepting multiple input values,
- * combining them as specified into accumulators, and producing a single output value.
- *
- * <p>Implementations of this form of state are expected to implement {@link #add} efficiently, not
- * via a sequence of read-modify-write.
- *
- * @tparam InputT the type of values added to the state
- * @tparam AccumT the type of accumulator
- * @tparam OutputT the type of value extracted from the state
- */
 trait CombiningState[InputT, AccumT, OutputT] extends GroupingState[InputT, OutputT] {
 
-  /**
-   * Read the merged accumulator for this state cell. It is implied that reading the state involves
-   * reading the accumulator, so {@link #readLater} is sufficient to prefetch for this.
-   */
   def getAccum: AccumT
 
-  /**
-   * Add an accumulator to this state cell. Depending on implementation this may immediately merge
-   * it with the previous accumulator, or may buffer this accumulator for a future merge.
-   */
   def addAccum(accumT: AccumT)
 
-  /** Merge the given accumulators according to the underlying {@link CombineFn}. */
   def mergeAccumulators(accumulators: Iterable[AccumT]): AccumT
 
   def readLater: CombiningState[InputT, AccumT, OutputT]

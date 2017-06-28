@@ -18,17 +18,8 @@
 
 package org.apache.gearpump.streaming.refactor.state.api
 
-/**
- * A {@link ReadableState} cell containing a single value.
- *
- * @tparam T The type of value being stored.
- */
 trait ValueState[T] extends ReadableState[T] with State {
 
-  /**
-   *
-   * @param input
-   */
   def write(input : T): Unit
 
   def readLater: ValueState[T]

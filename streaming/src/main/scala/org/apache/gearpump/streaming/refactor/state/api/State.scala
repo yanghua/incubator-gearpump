@@ -18,14 +18,8 @@
 
 package org.apache.gearpump.streaming.refactor.state.api
 
-/**
- * A state cell, supporting a {@link #clear()} operation
- */
 trait State {
 
-  /**
-   * Clear out the state location
-   */
   def clear: Unit
 
 }

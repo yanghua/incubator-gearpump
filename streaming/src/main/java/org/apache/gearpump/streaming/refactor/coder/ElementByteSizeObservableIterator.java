@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 
-package org.apache.gearpump.streaming.refactor.state.api
+package org.apache.gearpump.streaming.refactor.coder;
 
-trait StateInternalsFactory[K] extends Serializable {
+import java.util.Iterator;
+import java.util.Observable;
 
-  def stateInternalsForKey(key: K): StateInternals
-
+public abstract class ElementByteSizeObservableIterator<V>
+        extends Observable implements Iterator<V> {
+    protected final void notifyValueReturned(long byteSize) {
+        setChanged();
+        notifyObservers(byteSize);
+    }
 }

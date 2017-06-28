@@ -20,9 +20,6 @@ package org.apache.gearpump.streaming.refactor.state
 
 import org.apache.gearpump.streaming.refactor.state.api.State
 
-/**
- * state tag interface
- */
 trait StateTag[StateT <: State] extends Serializable {
 
   def appendTo(sb: Appendable)

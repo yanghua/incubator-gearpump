@@ -22,28 +22,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * a set coder inspired by Apache Beam
- * A {@link SetCoder} encodes any {@link Set} using the format of {@link IterableLikeCoder}. The
- * elements may not be in a deterministic order, depending on the {@code Set} implementation.
- *
- * @param <T> the type of the elements of the set
- */
 public class SetCoder<T> extends IterableLikeCoder<T, Set<T>> {
 
-    /**
-     * Produces a {@link SetCoder} with the given {@code elementCoder}.
-     */
     public static <T> SetCoder<T> of(Coder<T> elementCoder) {
         return new SetCoder<>(elementCoder);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws NonDeterministicException always. Sets are not ordered, but
-     *         they are encoded in the order of an arbitrary iteration.
-     */
     @Override
     public void verifyDeterministic() throws NonDeterministicException {
         throw new NonDeterministicException(this,
@@ -53,12 +37,6 @@ public class SetCoder<T> extends IterableLikeCoder<T, Set<T>> {
     /////////////////////////////////////////////////////////////////////////////
     // Internal operations below here.
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return A new {@link Set} built from the elements in the {@link List} decoded by
-     * {@link IterableLikeCoder}.
-     */
     @Override
     protected final Set<T> decodeToIterable(List<T> decodedElements) {
         return new HashSet<>(decodedElements);

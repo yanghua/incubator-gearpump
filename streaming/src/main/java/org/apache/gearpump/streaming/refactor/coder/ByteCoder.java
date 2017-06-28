@@ -20,10 +20,6 @@ package org.apache.gearpump.streaming.refactor.coder;
 
 import java.io.*;
 
-/**
- * A {@link ByteCoder} encodes {@link Byte} values in 1 byte using Java serialization
- * inspired by Apache Beam.
- */
 public class ByteCoder extends AtomicCoder<Byte> {
 
     public static ByteCoder of() {
@@ -68,41 +64,20 @@ public class ByteCoder extends AtomicCoder<Byte> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * {@link ByteCoder} will never throw a {@link Coder.NonDeterministicException}; bytes can always
-     * be encoded deterministically.
-     */
     @Override
     public void verifyDeterministic() {
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. This coder is injective.
-     */
     @Override
     public boolean consistentWithEquals() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. {@link ByteCoder#getEncodedElementByteSize} returns a constant.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(Byte value) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code 1}, the byte size of a {@link Byte} encoded using Java serialization.
-     */
     @Override
     protected long getEncodedElementByteSize(Byte value) {
         if (value == null) {

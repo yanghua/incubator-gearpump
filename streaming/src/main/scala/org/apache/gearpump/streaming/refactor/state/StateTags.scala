@@ -24,9 +24,6 @@ import org.apache.gearpump.streaming.refactor.coder.Coder
 import org.apache.gearpump.streaming.refactor.state.StateTags.StateKind.StateKind
 import org.apache.gearpump.streaming.refactor.state.api._
 
-/**
- * a utility object for StateTag
- */
 object StateTags {
 
   object StateKind extends Enumeration {

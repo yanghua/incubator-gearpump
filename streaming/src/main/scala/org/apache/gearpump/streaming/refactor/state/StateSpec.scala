@@ -21,9 +21,6 @@ package org.apache.gearpump.streaming.refactor.state
 import org.apache.gearpump.streaming.refactor.coder.Coder
 import org.apache.gearpump.streaming.refactor.state.api.State
 
-/**
- * state spec
- */
 trait StateSpec[StateT <: State] extends Serializable {
 
   def bind(id: String, binder: StateBinder): StateT

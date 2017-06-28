@@ -20,30 +20,10 @@ package org.apache.gearpump.streaming.refactor.state.api
 
 import org.apache.gearpump.streaming.refactor.state.{StateNamespace, StateTag}
 
-/**
- * {@code StateInternals} describes the functionality a runner needs to provide for the
- * State API to be supported.
- *
- * <p>The SDK will only use this after elements have been partitioned by key. For instance, after a
- * {@link GroupByKey} operation. The runner implementation must ensure that any writes using
- * {@link StateInternals} are implicitly scoped to the key being processed and the specific step
- * accessing state.
- *
- * <p>The runner implementation must also ensure that any writes to the associated state objects
- * are persisted together with the completion status of the processing that produced these
- * writes.
- *
- * <p>This is a low-level API intended for use by the Beam SDK. It should not be
- * used directly, and is highly likely to change.
- */
 trait StateInternals {
 
-  /** The key for this {@link StateInternals}. */
   def getKey: Any
 
-  /**
-   * Return the state associated with {@code address} in the specified {@code namespace}.
-   */
   def state[T <: State](namespace: StateNamespace, address: StateTag[T]): T
 
 }

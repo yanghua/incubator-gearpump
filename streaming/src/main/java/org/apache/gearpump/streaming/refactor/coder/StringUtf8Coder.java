@@ -23,12 +23,6 @@ import com.google.common.base.Utf8;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-/**
- * a string coder inspired by Apache Beam
- * A {@link Coder} that encodes {@link String Strings} in UTF-8 encoding.
- * If in a nested context, prefixes the string with an integer length field,
- * encoded via a {@link VarIntCoder}.
- */
 public class StringUtf8Coder extends AtomicCoder<String> {
 
     public static StringUtf8Coder of() {
@@ -89,22 +83,11 @@ public class StringUtf8Coder extends AtomicCoder<String> {
     public void verifyDeterministic() {
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. This coder is injective.
-     */
     @Override
     public boolean consistentWithEquals() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return the byte size of the UTF-8 encoding of the a string or, in a nested context,
-     * the byte size of the encoding plus the encoded length prefix.
-     */
     @Override
     public long getEncodedElementByteSize(String value) {
         if (value == null) {

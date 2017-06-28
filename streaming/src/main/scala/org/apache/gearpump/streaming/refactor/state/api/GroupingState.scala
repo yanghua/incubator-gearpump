@@ -18,25 +18,10 @@
 
 package org.apache.gearpump.streaming.refactor.state.api
 
-/**
- * A {@link ReadableState} cell that combines multiple input values and outputs a single value of a
- * different type.
- *
- * <p>This generalizes {@link GroupByKey} and {@link Combine} styles of grouping.
- *
- * @tparam InputT the type of values added to the state
- * @tparam OutputT the type of value extracted from the state
- */
 trait GroupingState[InputT, OutputT] extends ReadableState[OutputT] with State {
 
-  /**
-   * Add a value to the buffer.
-   */
   def add(value: InputT): Unit
 
-  /**
-   * Return true if this state is empty.
-   */
   def isEmpty: ReadableState[Boolean]
 
   def readLater: GroupingState[InputT, OutputT]

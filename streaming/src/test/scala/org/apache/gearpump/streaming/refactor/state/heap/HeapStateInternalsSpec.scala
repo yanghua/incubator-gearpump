@@ -29,9 +29,6 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{Matchers, PropSpec}
 
-/**
- * a test case for HeapStateInternals
- */
 class HeapStateInternalsSpec
   extends PropSpec with PropertyChecks with Matchers with MockitoSugar {
 

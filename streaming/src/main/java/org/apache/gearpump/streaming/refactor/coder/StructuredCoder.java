@@ -22,17 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by yanghua on 5/26/17.
- */
 public abstract class StructuredCoder<T> extends Coder<T> {
     protected StructuredCoder() {}
 
-    /**
-     * Returns the list of {@link Coder Coders} that are components of this {@link Coder}.
-     *
-     * <p>The default components will be equal to the value returned by {@link #getCoderArguments()}.
-     */
     public List<? extends Coder<?>> getComponents() {
         List<? extends Coder<?>> coderArguments = getCoderArguments();
         if (coderArguments == null) {
@@ -42,12 +34,6 @@ public abstract class StructuredCoder<T> extends Coder<T> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true} if the two {@link StructuredCoder} instances have the
-     * same class and equal components.
-     */
     @Override
     public boolean equals(Object o) {
         if (o == null || this.getClass() != o.getClass()) {
@@ -85,11 +71,6 @@ public abstract class StructuredCoder<T> extends Coder<T> {
         return builder.toString();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code false} for {@link StructuredCoder} unless overridden.
-     */
     @Override
     public boolean consistentWithEquals() {
         return false;

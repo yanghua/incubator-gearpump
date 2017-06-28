@@ -20,10 +20,6 @@ package org.apache.gearpump.streaming.refactor.coder;
 
 import java.io.*;
 
-/**
- * A {@link DoubleCoder} encodes {@link Double} values in 8 bytes using Java serialization
- * inspired by Apache Beam.
- */
 public class DoubleCoder extends AtomicCoder<Double> {
 
     public static DoubleCoder of() {
@@ -64,45 +60,22 @@ public class DoubleCoder extends AtomicCoder<Double> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws NonDeterministicException always.
-     *                                   Floating-point operations are not guaranteed to be deterministic, even
-     *                                   if the storage format might be, so floating point representations are not
-     *                                   recommended for use in operations that require deterministic inputs.
-     */
     @Override
     public void verifyDeterministic() {
         throw new NonDeterministicException(this,
                 "Floating point encodings are not guaranteed to be deterministic.");
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. This coder is injective.
-     */
     @Override
     public boolean consistentWithEquals() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. {@link DoubleCoder#getEncodedElementByteSize} returns a constant.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(Double value) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code 8}, the byte size of a {@link Double} encoded using Java serialization.
-     */
     @Override
     protected long getEncodedElementByteSize(Double value) {
         if (value == null) {

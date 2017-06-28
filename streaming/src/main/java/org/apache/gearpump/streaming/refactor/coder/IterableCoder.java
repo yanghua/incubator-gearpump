@@ -20,12 +20,6 @@ package org.apache.gearpump.streaming.refactor.coder;
 
 import java.util.List;
 
-/**
- * An {@link IterableCoder} encodes any {@link Iterable} in the format
- * of {@link IterableLikeCoder} inspired by Apache Beam.
- *
- * @param <T> the type of the elements of the iterables being transcoded
- */
 public class IterableCoder<T> extends IterableLikeCoder<T, Iterable<T>> {
 
     public static <T> IterableCoder<T> of(Coder<T> elemCoder) {

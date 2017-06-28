@@ -23,9 +23,6 @@ import java.util.Objects
 import org.apache.gearpump.streaming.refactor.coder.Coder
 import org.apache.gearpump.streaming.refactor.state.api.{BagState, MapState, SetState, ValueState}
 
-/**
- * a utility object for StateSpec
- */
 object StateSpecs {
 
   private class ValueStateSpec[T](coder: Coder[T]) extends StateSpec[ValueState[T]] {
@@ -53,12 +50,14 @@ object StateSpecs {
     }
 
     override def equals(obj: Any): Boolean = {
-      if (obj == this) true
+      var result = false
+      if (obj == this) result = true
 
-      if (!(obj.isInstanceOf[ValueStateSpec[T]])) false
+      if (!(obj.isInstanceOf[ValueStateSpec[T]])) result = false
 
       val that: ValueStateSpec[_] = obj.asInstanceOf[ValueStateSpec[_]]
-      Objects.equals(this.aCoder, that.aCoder)
+      result = Objects.equals(this.aCoder, that.aCoder)
+      result
     }
 
     override def hashCode(): Int = {
@@ -91,12 +90,14 @@ object StateSpecs {
     }
 
     override def equals(obj: Any): Boolean = {
-      if (obj == this) true
+      var result = false
+      if (obj == this) result = true
 
-      if (!obj.isInstanceOf[BagStateSpec[_]]) false
+      if (!obj.isInstanceOf[BagStateSpec[_]]) result = false
 
       val that = obj.asInstanceOf[BagStateSpec[_]]
-      Objects.equals(this.elemCoder, that.elemCoder)
+      result = Objects.equals(this.elemCoder, that.elemCoder)
+      result
     }
 
     override def hashCode(): Int = Objects.hash(getClass, elemCoder)
@@ -137,12 +138,14 @@ object StateSpecs {
     override def hashCode(): Int = Objects.hash(getClass, kCoder, vCoder)
 
     override def equals(obj: Any): Boolean = {
-      if (obj == this) true
+      var result = false
+      if (obj == this) result = true
 
-      if (!obj.isInstanceOf[MapStateSpec[_, _]]) false
+      if (!obj.isInstanceOf[MapStateSpec[_, _]]) result = false
 
       implicit var that = obj.asInstanceOf[MapStateSpec[_, _]]
-      Objects.equals(this.kCoder, that.vCoder) && Objects.equals(this.vCoder, that.vCoder)
+      result = Objects.equals(this.kCoder, that.vCoder) && Objects.equals(this.vCoder, that.vCoder)
+      result
     }
   }
 
@@ -171,12 +174,14 @@ object StateSpecs {
     }
 
     override def equals(obj: Any): Boolean = {
-      if (obj == this) true
+      var result = false
+      if (obj == this) result = true
 
-      if (!obj.isInstanceOf[SetStateSpec[_]]) false
+      if (!obj.isInstanceOf[SetStateSpec[_]]) result = false
 
       implicit var that = obj.asInstanceOf[SetStateSpec[_]]
-      Objects.equals(this.elemCoder, that.elemCoder)
+      result = Objects.equals(this.elemCoder, that.elemCoder)
+      result
     }
 
     override def hashCode(): Int = Objects.hash(getClass, elemCoder)

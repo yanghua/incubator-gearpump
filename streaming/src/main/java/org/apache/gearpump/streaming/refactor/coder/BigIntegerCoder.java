@@ -24,10 +24,6 @@ import java.math.BigInteger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * A {@link BigIntegerCoder} encodes a {@link BigInteger} as a byte array containing the big endian
- * two's-complement representation, encoded via {@link ByteArrayCoder} inspired by Apache Beam.
- */
 public class BigIntegerCoder extends AtomicCoder<BigInteger> {
 
     public static BigIntegerCoder of() {
@@ -60,31 +56,16 @@ public class BigIntegerCoder extends AtomicCoder<BigInteger> {
         BYTE_ARRAY_CODER.verifyDeterministic();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. This coder is injective.
-     */
     @Override
     public boolean consistentWithEquals() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}, because {@link #getEncodedElementByteSize} runs in constant time.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(BigInteger value) {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return the size of the encoding as a byte array according to {@link ByteArrayCoder}
-     */
     @Override
     protected long getEncodedElementByteSize(BigInteger value) {
         checkNotNull(value, String.format("cannot encode a null %s", BigInteger.class.getSimpleName()));

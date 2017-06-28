@@ -21,9 +21,6 @@ package org.apache.gearpump.streaming.refactor.coder;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * A {@link Coder} for {@link Void}. Uses zero bytes per {@link Void} inspreid by Apache Beam.
- */
 public class VoidCoder extends AtomicCoder<Void> {
 
     public static VoidCoder of() {
@@ -52,21 +49,11 @@ public class VoidCoder extends AtomicCoder<Void> {
     public void verifyDeterministic() {
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. {@link VoidCoder} is (vacuously) injective.
-     */
     @Override
     public boolean consistentWithEquals() {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true}. {@link VoidCoder#getEncodedElementByteSize} runs in constant time.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(Void value) {
         return true;

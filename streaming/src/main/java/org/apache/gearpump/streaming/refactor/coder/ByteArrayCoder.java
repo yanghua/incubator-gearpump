@@ -24,17 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * A {@link Coder} for {@code byte[]} inspired by Apache Beam
- * <p>
- * <p>The encoding format is as follows:
- * <ul>
- * <li>If in a non-nested context (the {@code byte[]} is the only value in the stream), the
- * bytes are read/written directly.</li>
- * <li>If in a nested context, the bytes are prefixed with the length of the array,
- * encoded via a {@link VarIntCoder}.</li>
- * </ul>
- */
 public class ByteArrayCoder extends AtomicCoder<byte[]> {
 
     public static ByteArrayCoder of() {
@@ -85,22 +74,11 @@ public class ByteArrayCoder extends AtomicCoder<byte[]> {
     public void verifyDeterministic() {
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return objects that are equal if the two arrays contain the same bytes.
-     */
     @Override
     public Object structuralValue(byte[] value) {
         return new StructuralByteArray(value);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@code true} since {@link #getEncodedElementByteSize} runs in
-     * constant time using the {@code length} of the provided array.
-     */
     @Override
     public boolean isRegisterByteSizeObserverCheap(byte[] value) {
         return true;

@@ -22,9 +22,6 @@ import org.apache.gearpump.streaming.refactor.coder.Coder
 import org.apache.gearpump.streaming.refactor.state.{StateNamespace, StateTag}
 import org.apache.gearpump.streaming.refactor.state.api.{State, StateInternals, StateInternalsFactory}
 
-/**
- * a utility class help use HeapStateInternals
- */
 class HeapStateInternalsProxy[K](heapStateInternalsFactory: HeapStateInternalsFactory[K])
   extends StateInternals with Serializable {
 

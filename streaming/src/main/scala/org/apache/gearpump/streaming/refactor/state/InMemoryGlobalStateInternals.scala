@@ -28,14 +28,7 @@ import org.apache.gearpump.streaming.refactor.coder.Coder
 import org.apache.gearpump.streaming.refactor.state.InMemoryGlobalStateInternals.InMemoryStateBinder
 import org.apache.gearpump.streaming.refactor.state.api._
 
-/**
- * a no namespace (global) in memory state internal.
- * it is a default implementation inspired by Apache Beam.
- * but do not recommend use it!
- */
 class InMemoryGlobalStateInternals[K] protected(key: K) extends StateInternals {
-
-  private val k: K = key
 
   protected val inMemoryStateTable: InMemoryGlobalStateInternals.StateTable =
     new InMemoryGlobalStateInternals.StateTable {
@@ -44,7 +37,7 @@ class InMemoryGlobalStateInternals[K] protected(key: K) extends StateInternals {
       }
   }
 
-  override def getKey: Any = k
+  override def getKey: Any = key
 
   override def state[T <: State](namespace: StateNamespace, address: StateTag[T]): T =
     inMemoryStateTable.get(namespace, address)

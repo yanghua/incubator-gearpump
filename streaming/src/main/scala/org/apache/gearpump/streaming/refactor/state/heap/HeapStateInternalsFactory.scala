@@ -25,9 +25,6 @@ import java.util._
 import com.google.common.collect.{HashBasedTable, Table}
 import org.apache.gearpump.util.LogUtil
 
-/**
- *
- */
 class HeapStateInternalsFactory[K](keyCoder: Coder[K],
     map: Map[String, Table[String, String, Array[Byte]]])
     extends StateInternalsFactory[K] with Serializable {
