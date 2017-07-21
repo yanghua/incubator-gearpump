@@ -22,7 +22,7 @@ import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.refactor.coder._
 import org.apache.gearpump.streaming.refactor.state.api.{StateInternals, ValueState}
-import org.apache.gearpump.streaming.refactor.state.{StateNamespaces, StateTags, StatefulTask}
+import org.apache.gearpump.streaming.refactor.state.{RuntimeContext, StateNamespaces, StateTags, StatefulTask}
 import org.apache.gearpump.streaming.task.TaskContext
 
 /**
@@ -39,8 +39,8 @@ class SumProcessor(taskContext: TaskContext, conf: UserConfig)
   private var valueState: Option[ValueState[java.lang.Long]] = None
   private var counterState: Option[ValueState[java.lang.Long]] = None
 
-  override def open: Unit = {
-    stateInternals = Some(getStateInternals(StringUtf8Coder.of, "partitionedKey"))
+  override def open(stateContext: RuntimeContext): Unit = {
+    stateInternals = Some(stateContext.getStateInternals(StringUtf8Coder.of, "partitionedKey"))
     valueState = Some(
       stateInternals.get.state(
         StateNamespaces.global, StateTags.value(valueStateTag, VarLongCoder.of))
@@ -87,6 +87,6 @@ class SumProcessor(taskContext: TaskContext, conf: UserConfig)
     }
   }
 
-  override def close: Unit = {}
+  override def close(stateContext: RuntimeContext): Unit = {}
 
 }

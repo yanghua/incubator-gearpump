@@ -34,10 +34,6 @@ import org.apache.gearpump.streaming.transaction.api.CheckpointStoreFactory
 import org.apache.gearpump.util.LogUtil
 import org.apache.gearpump.{Message, TimeStamp}
 
-object StatefulTask {
-  val LOG = LogUtil.getLogger(getClass)
-}
-
 abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
   extends Task(taskContext, conf) {
 
@@ -50,28 +46,18 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
   val checkpointInterval = conf.getLong(PersistentStateConfig.STATE_CHECKPOINT_INTERVAL_MS).get
   val checkpointManager = new CheckpointManager(checkpointInterval, checkpointStore)
 
+  var stateContext: RuntimeContext = null
+
   var inited = false
 
   // core state data
   var encodedKeyStateMap: Map[String, Table[String, String, Array[Byte]]] = null
 
-  def open: Unit = {}
+  def open(runtimeContext: RuntimeContext): Unit = {}
 
   def invoke(message: Message): Unit
 
-  def close: Unit = {}
-
-  def getStateInternals[KT](keyCoder: Coder[KT], key: KT): StateInternals = {
-    if (!inited) {
-      throw new RuntimeException(" please init state access object in `open` method! ")
-    }
-    if (encodedKeyStateMap == null) {
-      encodedKeyStateMap = new util.HashMap[String, Table[String, String, Array[Byte]]]()
-    }
-
-    val factory = new HeapStateInternalsFactory[KT](keyCoder, encodedKeyStateMap)
-    factory.stateInternalsForKey(key)
-  }
+  def close(runtimeContext: RuntimeContext): Unit = {}
 
   final override def onStart(startTime: Instant): Unit = {
     // recover state from snapshot
@@ -81,8 +67,10 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
       .recover(timestamp)
       .foreach(recoverState(timestamp, _))
     reportCheckpointClock(timestamp)
+
     inited = true
-    open
+    stateContext = new StreamingRuntimeContext(startTime)
+    open(stateContext)
   }
 
   final override def onNext(message: Message): Unit = {
@@ -90,7 +78,7 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
     invoke(message)
   }
 
-  final override def onWatermarkProgress(watermark: Instant): Unit = {
+  override def onWatermarkProgress(watermark: Instant): Unit = {
     if (checkpointManager.shouldCheckpoint(watermark.toEpochMilli)) {
       checkpointManager.getCheckpointTime.foreach { checkpointTime =>
         val serialized = snapshot
@@ -102,7 +90,7 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
 
   final override def onStop(): Unit = {
     LOG.info("[onStop] closing checkpoint manager")
-    close
+    close(stateContext)
     checkpointManager.close()
   }
 
@@ -164,6 +152,23 @@ abstract class StatefulTask(taskContext: TaskContext, conf: UserConfig)
           LOG.error("occurs exception when closing ByteArrayOutputStream : {}", ex)
       }
     }
+  }
+
+  private class StreamingRuntimeContext(startTime: Instant) extends RuntimeContext {
+
+    override def getStateInternals[KT](keyCoder: Coder[KT], key: KT): StateInternals = {
+      if (!inited) {
+        throw new RuntimeException(" please init state access object in `open` method! ")
+      }
+      if (encodedKeyStateMap == null) {
+        encodedKeyStateMap = new util.HashMap[String, Table[String, String, Array[Byte]]]()
+      }
+
+      val factory = new HeapStateInternalsFactory[KT](keyCoder, encodedKeyStateMap)
+      factory.stateInternalsForKey(key)
+    }
+
+    override def getStartTime: Instant = startTime
   }
 
 }

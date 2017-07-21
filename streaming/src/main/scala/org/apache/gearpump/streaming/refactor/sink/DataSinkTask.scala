@@ -16,38 +16,37 @@
  * limitations under the License.
  */
 
-package org.apache.gearpump.streaming.examples.state.refactor
+package org.apache.gearpump.streaming.refactor.sink
 
 import org.apache.gearpump.Message
 import org.apache.gearpump.cluster.UserConfig
 import org.apache.gearpump.streaming.refactor.state.{RuntimeContext, StatefulTask}
-import org.apache.gearpump.streaming.task.TaskContext
+import org.apache.gearpump.streaming.sink.DataSink
+import org.apache.gearpump.streaming.task.{TaskContext}
 
-/**
- *  a produce processor for generating a specific num sequence
- */
-class ProduceProcessor(taskContext: TaskContext, conf: UserConfig)
-  extends StatefulTask(taskContext, conf) {
+object DataSinkTask {
+  val DATA_SINK = "data_sink"
+}
 
-  override def open(runtimeContext: RuntimeContext): Unit = {}
+class DataSinkTask private[sink](context: TaskContext, conf: UserConfig, sink: DataSink)
+  extends StatefulTask(context, conf) {
 
-  override def invoke(message: Message): Unit = {
-    message.value match {
-      case msgBytes: Array[Byte] => {
-        val msgStr = new String(msgBytes)
-        LOG.info("got total sequence num : {}", msgStr)
-
-        val n: Int = Integer.valueOf(msgStr)
-        var sumResult: Long = 0
-        for (i <- 1 to n) {
-          taskContext.output(Message(String.valueOf(i).getBytes))
-          sumResult = sumResult + i
-        }
-
-        LOG.info(" total sum result : {}", sumResult)
-      }
-    }
+  def this(context: TaskContext, conf: UserConfig) = {
+    this(context, conf, conf.getValue[DataSink](DataSinkTask.DATA_SINK)(context.system).get)
   }
 
-  override def close(runtimeContext: RuntimeContext): Unit = {}
+  override def open(runtimeContext: RuntimeContext): Unit = {
+    LOG.info("opening data sink...")
+    sink.open(context)
+  }
+
+  override def invoke(message: Message): Unit = {
+    sink.write(message)
+  }
+
+  override def close(runtimeContext: RuntimeContext): Unit = {
+    LOG.info("closing data sink...")
+    sink.close()
+  }
+
 }
